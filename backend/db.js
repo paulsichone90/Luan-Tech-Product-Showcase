@@ -2,6 +2,8 @@
 require('dotenv').config();
 
 const mysql = require('mysql2/promise');
+const fs = require('fs');
+const path = require('path');
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -11,7 +13,16 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+
+    // Enable verified TLS when connecting to Aiven
+    ssl: process.env.DB_SSL === 'true'
+        ? {
+            ca: fs.readFileSync(
+                path.join(__dirname, 'ca.pem')
+            )
+        }
+        : undefined
 });
 
 module.exports = pool;
