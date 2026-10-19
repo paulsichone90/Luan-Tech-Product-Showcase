@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage and explore technology products.">
+    <title>Tech Product Showcase</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/script.js" defer></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="#">
+            <span class="brand-icon">L</span>
+            <span>Luan<span class="accent">Tech</span></span>
+        </a>
+
+        <span class="api-status" id="apiStatus">Checking API...</span>
+    </header>
+
+    <main class="container">
+
+        <!-- Dashboard introduction -->
+        <section class="hero">
+            <p class="eyebrow">PRODUCT MANAGEMENT</p>
+            <h1>Luan Tech Products </h1>
+            <p class="subtitle">
+                All your technology inventory in one place.
+            </p>
+        </section>
+
+        <!-- Inventory statistics -->
+        <section class="stats">
+            <article class="stat-card">
+                <span>Total products</span>
+                <strong id="totalProducts">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>Total units in stock</span>
+                <strong id="totalStock">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>Inventory value</span>
+                <strong id="inventoryValue">K0.00</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>Low-stock products</span>
+                <strong id="lowStockCount">0</strong>
+                <small>1–5 units remaining</small>
+            </article>
+        </section>
+
+        <!-- Add and edit product form -->
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h2 id="formTitle">Add a product</h2>
+                    <p>Enter the product details below.</p>
+                </div>
+            </div>
+
+            <form id="productForm">
+                <input type="hidden" id="productId">
+
+                <div class="form-grid">
+                    <label for="productName">
+                        Product name *
+                        <input
+                            id="productName"
+                            type="text"
+                            maxlength="150"
+                            required
+                            placeholder="e.g. Laptop Pro 14"
+                        >
+                    </label>
+
+                    <label for="brand">
+                        Brand *
+                        <input
+                            id="brand"
+                            type="text"
+                            maxlength="100"
+                            required
+                            placeholder="e.g. Lenovo"
+                        >
+                    </label>
+
+                    <label for="category">
+                        Category *
+                        <input
+                            id="category"
+                            type="text"
+                            maxlength="80"
+                            required
+                            placeholder="e.g. Laptop"
+                        >
+                    </label>
+
+                    <label for="price">
+                        Price (K) *
+                        <input
+                            id="price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            required
+                            placeholder="0.00"
+                        >
+                    </label>
+
+                    <label for="stockQuantity">
+                        Stock quantity *
+                        <input
+                            id="stockQuantity"
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            placeholder="0"
+                        >
+                    </label>
+
+                    <label for="description" class="full-width">
+                        Description
+                        <textarea
+                            id="description"
+                            rows="3"
+                            placeholder="Describe the product..."
+                        ></textarea>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitButton"
+                    >
+                        Add product
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="cancelEdit"
+                        hidden
+                    >
+                        Cancel edit
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Inventory management -->
+        <section class="panel">
+            <div class="section-heading inventory-heading">
+                <div>
+                    <h2>Inventory</h2>
+                    <p>Products retrieved from your database.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="refreshButton"
+                >
+                    Refresh
+                </button>
+            </div>
+
+            <!-- Search, filter and sorting controls -->
+            <div class="toolbar">
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search products, brands or categories..."
+                    aria-label="Search products"
+                >
+
+                <select
+                    id="categoryFilter"
+                    aria-label="Filter by category"
+                >
+                    <option value="">All categories</option>
+                </select>
+
+                <select
+                    id="stockFilter"
+                    aria-label="Filter by stock status"
+                >
+                    <option value="all">All stock levels</option>
+                    <option value="in-stock">In stock (more than 5)</option>
+                    <option value="low-stock">Low stock (1–5)</option>
+                    <option value="out-of-stock">Out of stock</option>
+                </select>
+
+                <select
+                    id="sortSelect"
+                    aria-label="Sort products"
+                >
+                    <option value="id-asc">Oldest added</option>
+                    <option value="id-desc">Newest added</option>
+                    <option value="name-asc">Name: A–Z</option>
+                    <option value="name-desc">Name: Z–A</option>
+                    <option value="price-asc">Price: Low to high</option>
+                    <option value="price-desc">Price: High to low</option>
+                    <option value="stock-asc">Stock: Low to high</option>
+                    <option value="stock-desc">Stock: High to low</option>
+                </select>
+
+                <span id="resultCount">0 products</span>
+            </div>
+
+            <!-- Product table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="productTableBody">
+                        <tr>
+                            <td colspan="7">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Status and error messages -->
+            <div
+                id="message"
+                role="status"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <footer>
+            <p>Tech Product Showcase · Node.js · Express · MySQL</p>
+        </footer>
+
+    </main>
+</body>
+</html>
